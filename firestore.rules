@@ -1,0 +1,27 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    // Правила для бюджетов
+    match /budgets/{budgetId} {
+      // Читать и писать могут только участники бюджета
+      allow read, write: if request.auth != null && 
+        request.auth.uid in resource.data.members;
+      
+      // Создавать новые бюджеты могут авторизованные пользователи
+      allow create: if request.auth != null && 
+        request.auth.uid == request.resource.data.owner;
+    }
+    
+    // Правила для подколлекций бюджета (профили, категории, операции)
+    match /budgets/{budgetId}/{subcollection=**} {
+      // Доступ только участникам бюджета
+      allow read, write: if request.auth != null && 
+        request.auth.uid in get(/databases/$(database)/documents/budgets/$(budgetId)).data.members;
+    }
+    
+    // Временные правила для разработки (удалить в продакшене)
+    // match /{document=**} {
+    //   allow read, write: if request.auth != null;
+    // }
+  }
+}

@@ -1,6 +1,13 @@
 rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
+    // Временные открытые правила для тестирования
+    match /{document=**} {
+      allow read, write: if request.auth != null;
+    }
+    
+    // Закомментированы строгие правила (раскомментировать после тестирования)
+    /*
     // Правила для бюджетов
     match /budgets/{budgetId} {
       // Читать и писать могут только участники бюджета
@@ -18,10 +25,6 @@ service cloud.firestore {
       allow read, write: if request.auth != null && 
         request.auth.uid in get(/databases/$(database)/documents/budgets/$(budgetId)).data.members;
     }
-    
-    // Временные правила для разработки (удалить в продакшене)
-    // match /{document=**} {
-    //   allow read, write: if request.auth != null;
-    // }
+    */
   }
 }

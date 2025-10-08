@@ -45,6 +45,7 @@ export default function Navbar() {
     { to: '/operations', label: 'Операции' },
     { to: '/budget', label: 'Семья' },
     { to: '/settings', label: 'Настройки' },
+    { to: '/firebase-test', label: '🔬 Тест Firebase' },
   ];
 
   return (

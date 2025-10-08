@@ -14,6 +14,7 @@ firebase init
 ```
 
 Выберите:
+
 - ✅ Firestore
 - ✅ Hosting (опционально)
 
@@ -46,6 +47,7 @@ match /{document=**} {
 ## 5. Структура данных
 
 ### Бюджет (`/budgets/{budgetId}`)
+
 ```javascript
 {
   owner: "user_uid",
@@ -60,6 +62,7 @@ match /{document=**} {
 ```
 
 ### Профиль (`/budgets/{budgetId}/profiles/{profileId}`)
+
 ```javascript
 {
   name: "User Name",
@@ -71,6 +74,7 @@ match /{document=**} {
 ```
 
 ### Операция (`/budgets/{budgetId}/operations/{operationId}`)
+
 ```javascript
 {
   amount: 100,
@@ -97,7 +101,8 @@ firebase firestore:rules:get
 
 ## 7. Безопасность
 
-⚠️ **Важно**: 
+⚠️ **Важно**:
+
 - Никогда не используйте `allow read, write: if true;` в продакшене
 - Всегда проверяйте `request.auth != null`
 - Ограничивайте доступ по участникам бюджета

@@ -11,10 +11,11 @@
     "lint:fix": "echo 'ESLint not configured yet'",
     "test": "echo 'Tests not configured yet'",
     "test:watch": "echo 'Tests not configured yet'",
-    "clean": "rm -rf docs node_modules/.vite",
+    "clean": "if exist docs rmdir /S /Q docs && if exist node_modules\\.vite rmdir /S /Q node_modules\\.vite",
     "serve": "vite preview"
   },
   "dependencies": {
+    "@emotion/is-prop-valid": "^1.4.0",
     "@radix-ui/react-dialog": "^1.1.15",
     "firebase": "^10.14.1",
     "framer-motion": "^11.18.2",

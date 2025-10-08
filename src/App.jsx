@@ -14,6 +14,7 @@ import Login from './pages/Login.jsx'
 import Register from './pages/Register.jsx'
 import Budget from './pages/Budget.jsx'
 import Debug from './pages/Debug.jsx'
+import FirebaseTest from './pages/FirebaseTest.jsx'
 import { AuthProvider, useAuth } from './firebase/auth.jsx'
 import { BudgetProvider } from './context/BudgetProvider.jsx'
 
@@ -45,6 +46,7 @@ export default function App() {
               <Route path="/settings" element={<ProtectedRoute><Settings /></ProtectedRoute>} />
               <Route path="/budget" element={<ProtectedRoute><Budget /></ProtectedRoute>} />
               <Route path="/debug" element={<ProtectedRoute><Debug /></ProtectedRoute>} />
+              <Route path="/firebase-test" element={<ProtectedRoute><FirebaseTest /></ProtectedRoute>} />
               <Route path="/login" element={<Login />} />
               <Route path="/register" element={<Register />} />
             </Routes>

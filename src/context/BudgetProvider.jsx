@@ -43,6 +43,8 @@ export function BudgetProvider({ children }) {
 
     console.log('Loading budget data...', { budgetId, userId: user.uid })
 
+    let unsubscriptions = []
+
     // Проверяем доступ к бюджету
     const checkAccess = async () => {
       try {
@@ -55,20 +57,15 @@ export function BudgetProvider({ children }) {
         }
 
         const budgetData = budgetSnap.data()
-        if (!budgetData.members[user.uid]) {
+        if (!budgetData.members || !budgetData.members[user.uid]) {
           console.error('No access to budget')
           setBudgetId(null)
           localStorage.removeItem('budgetId')
           return
         }
 
-        // Инициализируем переменные для отписок
-        let unsubProfiles = null
-        let unsubCategories = null
-        let unsubOperations = null
-
         // Подписываемся на профили
-        unsubProfiles = onSnapshot(
+        const unsubProfiles = onSnapshot(
           query(collection(db, 'budgets', budgetId, 'profiles')),
           (snapshot) => {
             const newProfiles = snapshot.docs.map(doc => ({
@@ -82,7 +79,7 @@ export function BudgetProvider({ children }) {
         )
 
         // Подписываемся на категории
-        unsubCategories = onSnapshot(
+        const unsubCategories = onSnapshot(
           query(collection(db, 'budgets', budgetId, 'categories')),
           (snapshot) => {
             const newCategories = snapshot.docs.map(doc => ({
@@ -96,44 +93,37 @@ export function BudgetProvider({ children }) {
         )
 
         // Подписываемся на операции
-        unsubOperations = onSnapshot(
+        const unsubOperations = onSnapshot(
           query(collection(db, 'budgets', budgetId, 'operations'), orderBy('date', 'desc')),
           (snapshot) => {
             const newOperations = snapshot.docs.map(doc => ({
               id: doc.id,
               ...doc.data()
             }))
+            console.log('Operations loaded:', newOperations.length)
             setOperations(newOperations)
-          }
+          },
+          (error) => console.error('Error loading operations:', error)
         )
 
-        // Возвращаем функцию очистки с проверками
-        return () => {
-          console.log('🧹 Cleaning up Firestore subscriptions...')
-          if (unsubProfiles && typeof unsubProfiles === 'function') {
-            unsubProfiles()
-          }
-          if (unsubCategories && typeof unsubCategories === 'function') {
-            unsubCategories()
-          }
-          if (unsubOperations && typeof unsubOperations === 'function') {
-            unsubOperations()
-          }
-        }
+        // Сохраняем функции отписки
+        unsubscriptions = [unsubProfiles, unsubCategories, unsubOperations]
+
       } catch (error) {
         console.error('Error checking budget access:', error)
-        return null
       }
     }
 
-    const cleanup = checkAccess()
+    checkAccess()
     
     // Возвращаем функцию очистки
-    return async () => {
-      const cleanupFn = await cleanup
-      if (cleanupFn && typeof cleanupFn === 'function') {
-        cleanupFn()
-      }
+    return () => {
+      console.log('🧹 Cleaning up Firestore subscriptions...')
+      unsubscriptions.forEach(unsub => {
+        if (unsub && typeof unsub === 'function') {
+          unsub()
+        }
+      })
     }
   }, [user, budgetId])
 
@@ -223,7 +213,17 @@ export function BudgetProvider({ children }) {
       return budgetRef.id
     } catch (error) {
       console.error('Error creating budget:', error)
-      throw error
+      
+      // Более детальная обработка ошибок
+      if (error.code === 'permission-denied') {
+        throw new Error('Нет прав для создания бюджета. Проверьте правила безопасности Firebase.')
+      } else if (error.code === 'network-request-failed') {
+        throw new Error('Ошибка сети. Проверьте подключение к интернету.')
+      } else if (error.message?.includes('Firebase configuration')) {
+        throw new Error('Ошибка конфигурации Firebase. Проверьте настройки.')
+      }
+      
+      throw new Error(`Не удалось создать бюджет: ${error.message}`)
     }
   }
 

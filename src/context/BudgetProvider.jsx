@@ -27,40 +27,45 @@ export function BudgetProvider({ children }) {
     if (!userProfile) return
 
     let lastUpdate = 0
-    const updateInterval = 60000 // Минимальный интервал между обновлениями - 1 минута
+    const updateInterval = 300000 // Обновляем статус каждые 5 минут
+    let isOnline = true
 
     // Обновить онлайн статус с защитой от частых обновлений
-    const updateOnlineStatus = async () => {
+    const updateOnlineStatus = async (force = false) => {
       const now = Date.now()
-      if (now - lastUpdate < updateInterval) {
-        return // Пропускаем обновление если прошло меньше минуты
+      if (!force && now - lastUpdate < updateInterval) {
+        return // Пропускаем обновление если прошло меньше 5 минут
       }
 
       try {
         const profileRef = doc(db, 'budgets', budgetId, 'profiles', userProfile.id)
-        await updateDoc(profileRef, {
-          online: true,
-          lastSeen: serverTimestamp(),
-          // Обновляем lastLogin только при первом входе
-          ...(lastUpdate === 0 ? { lastLogin: serverTimestamp() } : {})
-        })
-        lastUpdate = now
+        if (isOnline) {
+          await updateDoc(profileRef, {
+            online: true,
+            lastSeen: serverTimestamp(),
+            // Обновляем lastLogin только при первом входе
+            ...(lastUpdate === 0 ? { lastLogin: serverTimestamp() } : {})
+          })
+          lastUpdate = now
+        }
       } catch (error) {
         console.error('Failed to update online status:', error)
       }
     }
 
     // Обновить статус при загрузке
-    updateOnlineStatus()
+    updateOnlineStatus(true)
 
     // Установить обработчики для отслеживания состояния подключения
     const onlineHandler = () => {
       console.log('🟢 Пользователь онлайн')
-      updateOnlineStatus()
+      isOnline = true
+      updateOnlineStatus(true)
     }
 
     const offlineHandler = async () => {
       console.log('🔴 Пользователь оффлайн')
+      isOnline = false
       if (userProfile) {
         const profileRef = doc(db, 'budgets', budgetId, 'profiles', userProfile.id)
         try {
@@ -78,9 +83,12 @@ export function BudgetProvider({ children }) {
     window.addEventListener('online', onlineHandler)
     window.addEventListener('offline', offlineHandler)
 
-    // Обновлять lastSeen каждую минуту, пока пользователь активен
-    // Обновляем статус реже - раз в 5 минут вместо каждой минуты
-    const intervalId = setInterval(updateOnlineStatus, 300000)
+    // Обновляем статус каждые 5 минут только если пользователь онлайн
+    const intervalId = setInterval(() => {
+      if (isOnline) {
+        updateOnlineStatus()
+      }
+    }, updateInterval)
 
     // Используем debounce для обработки закрытия вкладки
     let timeoutId

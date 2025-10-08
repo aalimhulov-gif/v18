@@ -62,8 +62,13 @@ export function BudgetProvider({ children }) {
           return
         }
 
+        // Инициализируем переменные для отписок
+        let unsubProfiles = null
+        let unsubCategories = null
+        let unsubOperations = null
+
         // Подписываемся на профили
-        const unsubProfiles = onSnapshot(
+        unsubProfiles = onSnapshot(
           query(collection(db, 'budgets', budgetId, 'profiles')),
           (snapshot) => {
             const newProfiles = snapshot.docs.map(doc => ({
@@ -77,7 +82,7 @@ export function BudgetProvider({ children }) {
         )
 
         // Подписываемся на категории
-        const unsubCategories = onSnapshot(
+        unsubCategories = onSnapshot(
           query(collection(db, 'budgets', budgetId, 'categories')),
           (snapshot) => {
             const newCategories = snapshot.docs.map(doc => ({
@@ -91,7 +96,7 @@ export function BudgetProvider({ children }) {
         )
 
         // Подписываемся на операции
-        const unsubOperations = onSnapshot(
+        unsubOperations = onSnapshot(
           query(collection(db, 'budgets', budgetId, 'operations'), orderBy('date', 'desc')),
           (snapshot) => {
             const newOperations = snapshot.docs.map(doc => ({
@@ -102,17 +107,34 @@ export function BudgetProvider({ children }) {
           }
         )
 
+        // Возвращаем функцию очистки с проверками
         return () => {
-          unsubProfiles()
-          unsubCategories()
-          unsubOperations()
+          console.log('🧹 Cleaning up Firestore subscriptions...')
+          if (unsubProfiles && typeof unsubProfiles === 'function') {
+            unsubProfiles()
+          }
+          if (unsubCategories && typeof unsubCategories === 'function') {
+            unsubCategories()
+          }
+          if (unsubOperations && typeof unsubOperations === 'function') {
+            unsubOperations()
+          }
         }
       } catch (error) {
         console.error('Error checking budget access:', error)
+        return null
       }
     }
 
-    checkAccess()
+    const cleanup = checkAccess()
+    
+    // Возвращаем функцию очистки
+    return async () => {
+      const cleanupFn = await cleanup
+      if (cleanupFn && typeof cleanupFn === 'function') {
+        cleanupFn()
+      }
+    }
   }, [user, budgetId])
 
   // Budget

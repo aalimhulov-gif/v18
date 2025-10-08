@@ -7,6 +7,7 @@ node_modules
 # Production build
 dist
 build
+docs
 
 # Environment variables
 .env
@@ -38,5 +39,12 @@ pids
 *.seed
 *.pid.lock
 
-# Firebase config (если нужно скрыть)
-src/firebase/firebaseConfig.js
+# Cache directories
+.cache
+.parcel-cache
+.vite
+
+# Firebase
+.firebaserc
+firebase-debug.log
+.firebase/

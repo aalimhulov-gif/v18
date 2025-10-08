@@ -6,7 +6,13 @@
   "scripts": {
     "dev": "vite",
     "build": "vite build",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "lint": "echo 'ESLint not configured yet'",
+    "lint:fix": "echo 'ESLint not configured yet'",
+    "test": "echo 'Tests not configured yet'",
+    "test:watch": "echo 'Tests not configured yet'",
+    "clean": "rm -rf docs node_modules/.vite",
+    "serve": "vite preview"
   },
   "dependencies": {
     "@radix-ui/react-dialog": "^1.1.15",

@@ -40,13 +40,67 @@
 - **Аудио**: Web Audio API
 - **Деплой**: GitHub Pages
 
-## 📦 Установка
+## 📦 Установка и настройка
 
 ### Предварительные требования
 
 - Node.js 18+
 - npm или yarn
 - Аккаунт Firebase
+
+### 1. Клонирование и установка зависимостей
+
+```bash
+git clone <repository-url>
+cd budget-app
+npm install
+```
+
+### 2. Настройка Firebase
+
+1. Создайте проект в [Firebase Console](https://console.firebase.google.com/)
+2. Включите Authentication (Email/Password)
+3. Создайте Firestore Database
+4. Скопируйте настройки проекта
+
+### 3. Настройка переменных окружения
+
+```bash
+# Скопируйте пример файла
+cp .env.example .env
+
+# Заполните ваши Firebase настройки в .env
+VITE_FIREBASE_API_KEY=your_api_key_here
+VITE_FIREBASE_AUTH_DOMAIN=your_project_id.firebaseapp.com
+VITE_FIREBASE_PROJECT_ID=your_project_id
+VITE_FIREBASE_STORAGE_BUCKET=your_project_id.firebasestorage.app
+VITE_FIREBASE_MESSAGING_SENDER_ID=your_sender_id
+VITE_FIREBASE_APP_ID=your_app_id
+```
+
+### 4. Запуск приложения
+
+```bash
+# Режим разработки (http://localhost:3000)
+npm run dev
+
+# Сборка для продакшена
+npm run build
+
+# Предварительный просмотр сборки
+npm run preview
+```
+
+## 🔧 Доступные команды
+
+```bash
+npm run dev          # Запуск dev сервера
+npm run build        # Сборка для продакшена
+npm run preview      # Предварительный просмотр
+npm run lint         # Проверка кода (в планах)
+npm run test         # Запуск тестов (в планах)
+npm run clean        # Очистка кеша и сборки
+```
 
 ### Шаги установки
 

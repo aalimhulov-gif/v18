@@ -3,7 +3,6 @@ import React from 'react'
 import { Routes, Route, Navigate } from 'react-router-dom'
 import Navbar from './components/Navbar.jsx'
 import LoadingSpinner from './components/LoadingSpinner.jsx'
-import ProfileGuard from './components/ProfileGuard.jsx'
 import Home from './pages/Home.jsx'
 import Categories from './pages/Categories.jsx'
 import Goals from './pages/Goals.jsx'
@@ -12,11 +11,9 @@ import Settings from './pages/Settings.jsx'
 import Limits from './pages/Limits.jsx'
 import Login from './pages/Login.jsx'
 import Register from './pages/Register.jsx'
-import Budget from './pages/Budget.jsx'
-import Debug from './pages/Debug.jsx'
-import FirebaseTest from './pages/FirebaseTest.jsx'
+import BudgetSimple from './pages/BudgetSimple.jsx'
 import { AuthProvider, useAuth } from './firebase/auth.jsx'
-import { BudgetProvider } from './context/BudgetProvider.jsx'
+import { BudgetProvider } from './context/BudgetProviderSimple.jsx'
 
 function ProtectedRoute({ children }) {
   const { user, loading } = useAuth()
@@ -44,9 +41,7 @@ export default function App() {
               <Route path="/operations" element={<ProtectedRoute><Operations /></ProtectedRoute>} />
               <Route path="/limits" element={<ProtectedRoute><Limits /></ProtectedRoute>} />
               <Route path="/settings" element={<ProtectedRoute><Settings /></ProtectedRoute>} />
-              <Route path="/budget" element={<ProtectedRoute><Budget /></ProtectedRoute>} />
-              <Route path="/debug" element={<ProtectedRoute><Debug /></ProtectedRoute>} />
-              <Route path="/firebase-test" element={<ProtectedRoute><FirebaseTest /></ProtectedRoute>} />
+              <Route path="/budget" element={<ProtectedRoute><BudgetSimple /></ProtectedRoute>} />
               <Route path="/login" element={<Login />} />
               <Route path="/register" element={<Register />} />
             </Routes>

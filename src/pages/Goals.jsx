@@ -1,6 +1,6 @@
 import React, { useState } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
-import { useBudget } from '../context/BudgetProvider.jsx'
+import { useBudget } from '../context/BudgetProviderSimple.jsx'
 import Modal from '../components/Modal'
 import ProgressBar from '../components/ProgressBar'
 

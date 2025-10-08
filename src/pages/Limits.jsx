@@ -1,6 +1,6 @@
 import React, { useState } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
-import { useBudget } from '../context/BudgetProvider.jsx'
+import { useBudget } from '../context/BudgetProviderSimple.jsx'
 import { Trash2, Edit, Plus, AlertTriangle } from 'lucide-react'
 
 export default function Limits() {

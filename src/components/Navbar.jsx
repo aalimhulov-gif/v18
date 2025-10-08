@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { createPortal } from 'react-dom';
 import { Link, NavLink, useNavigate, useLocation } from 'react-router-dom';
 import { useAuth } from '../firebase/auth.jsx';
-import { useBudget } from '../context/BudgetProvider.jsx';
+import { useBudget } from '../context/BudgetProviderSimple.jsx';
 
 export default function Navbar() {
   const { user, logout } = useAuth();
@@ -43,9 +43,8 @@ export default function Navbar() {
     { to: '/limits', label: 'Лимиты' },
     { to: '/goals', label: 'Цели' },
     { to: '/operations', label: 'Операции' },
-    { to: '/budget', label: 'Семья' },
+    { to: '/budget', label: 'Личный бюджет' },
     { to: '/settings', label: 'Настройки' },
-    { to: '/firebase-test', label: '🔬 Тест Firebase' },
   ];
 
   return (

@@ -1,6 +1,6 @@
 import React, { useState, useMemo } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
-import { useBudget } from '../context/BudgetProvider.jsx'
+import { useBudget } from '../context/BudgetProviderSimple.jsx'
 import { useSound } from '../hooks/useSound.js'
 
 export default function Operations() {

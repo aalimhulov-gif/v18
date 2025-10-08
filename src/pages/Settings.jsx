@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react'
-import { useBudget } from '../context/BudgetProvider.jsx'
+import { useBudget } from '../context/BudgetProviderSimple.jsx'
 import { useAuth } from '../firebase/auth.jsx'
 import { useSound } from '../hooks/useSound.js'
 

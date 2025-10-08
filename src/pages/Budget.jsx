@@ -1,27 +1,65 @@
 import React, { useState } from 'react'
 import { motion } from 'framer-motion'
 import { useBudget } from '../context/BudgetProvider.jsx'
+import { useAuth } from '../firebase/auth.jsx'
 import Modal from '../components/Modal'
 
 export default function Budget() {
+  const { user } = useAuth()
   const { budgetId, budgetCode, createBudget, joinBudget, updateBudgetCode } = useBudget()
   const [open, setOpen] = useState(false)
   const [input, setInput] = useState('')
   const [code, setCode] = useState(budgetCode || '')
 
+  // Проверяем авторизацию
+  if (!user) {
+    return (
+      <div className="text-center space-y-4">
+        <h2 className="text-2xl font-bold text-white">Требуется авторизация</h2>
+        <p className="text-zinc-400">Пожалуйста, войдите или зарегистрируйтесь</p>
+      </div>
+    )
+  }
+
+  // Создать новый бюджет
+  const handleCreate = async () => {
+    try {
+      console.log('Creating new budget...')
+      await createBudget()
+      console.log('Budget created successfully')
+    } catch (error) {
+      console.error('Failed to create budget:', error)
+      alert('Не удалось создать бюджет: ' + error.message)
+    }
+  }
+
   // Присоединиться по ID или коду
   const handleJoin = async (e) => {
     e.preventDefault()
-    await joinBudget(input)
-    setOpen(false)
-    setInput('')
+    try {
+      console.log('Joining budget with code:', input)
+      await joinBudget(input)
+      console.log('Joined budget successfully')
+      setOpen(false)
+      setInput('')
+    } catch (error) {
+      console.error('Failed to join budget:', error)
+      alert('Не удалось присоединиться к бюджету: ' + error.message)
+    }
   }
 
   // Обновить короткий код
   const saveCode = async (e) => {
     e.preventDefault()
     if (!code) return
-    await updateBudgetCode(code)
+    try {
+      console.log('Updating budget code to:', code)
+      await updateBudgetCode(code)
+      console.log('Budget code updated successfully')
+    } catch (error) {
+      console.error('Failed to update budget code:', error)
+      alert('Не удалось обновить код: ' + error.message)
+    }
   }
 
   const containerVariants = {
@@ -150,7 +188,7 @@ export default function Budget() {
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <button 
                   className="p-6 rounded-xl border border-green-500/30 text-white hover:bg-gradient-to-r hover:from-green-500/20 hover:to-emerald-500/20 transition-all duration-300 backdrop-blur-xl group"
-                  onClick={createBudget}
+                  onClick={handleCreate}
                   style={{
                     background: 'linear-gradient(135deg, rgba(34, 197, 94, 0.2), rgba(16, 185, 129, 0.2))',
                     backdropFilter: 'blur(10px)'

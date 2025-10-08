@@ -13,7 +13,7 @@ import Login from './pages/Login.jsx'
 import Register from './pages/Register.jsx'
 import BudgetSimple from './pages/BudgetSimple.jsx'
 import { AuthProvider, useAuth } from './firebase/auth.jsx'
-import { BudgetProvider } from './context/BudgetProviderSimple.jsx'
+import { BudgetProvider } from './context/BudgetProviderFirestore.jsx'
 
 function ProtectedRoute({ children }) {
   const { user, loading } = useAuth()

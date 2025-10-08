@@ -1,9 +1,25 @@
 rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
-    // Полностью открытые правила для отладки - ВРЕМЕННО!
-    match /{document=**} {
-      allow read, write;
+    // Правила для общего бюджета
+    match /budgets/{budgetId} {
+      // Доступ к документу бюджета для авторизованных пользователей
+      allow read, write: if request.auth != null;
+      
+      // Правила для категорий в бюджете
+      match /categories/{categoryId} {
+        allow read, write: if request.auth != null;
+      }
+      
+      // Правила для операций в бюджете
+      match /operations/{operationId} {
+        allow read, write: if request.auth != null;
+      }
+    }
+    
+    // Правила для пользовательских настроек
+    match /users/{userId} {
+      allow read, write: if request.auth != null && request.auth.uid == userId;
     }
   }
 }

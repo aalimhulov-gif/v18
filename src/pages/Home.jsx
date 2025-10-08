@@ -1,6 +1,6 @@
 import React, { useState } from 'react'
 import { motion } from 'framer-motion'
-import { useBudget } from '../context/BudgetProviderSimple.jsx'
+import { useBudget } from '../context/BudgetProviderFirestore.jsx'
 import { useAuth } from '../firebase/auth.jsx'
 import { useSound } from '../hooks/useSound.js'
 import { useDeviceType, getDeviceIcon, getDeviceStatus } from '../hooks/useDevice.js'

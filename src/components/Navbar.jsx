@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { createPortal } from 'react-dom';
 import { Link, NavLink, useNavigate, useLocation } from 'react-router-dom';
 import { useAuth } from '../firebase/auth.jsx';
-import { useBudget } from '../context/BudgetProviderSimple.jsx';
+import { useBudget } from '../context/BudgetProviderFirestore.jsx';
 
 export default function Navbar() {
   const { user, logout } = useAuth();

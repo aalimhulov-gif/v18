@@ -147,7 +147,47 @@ export function BudgetProvider({ children }) {
     */
   }, [])
 
-  // Live subscriptions
+  // Загрузка данных
+  useEffect(() => {
+    if (!user || !budgetId) return
+
+    console.log('Loading budget data...')
+
+    // Подписываемся на профили
+    const unsubProfiles = onSnapshot(
+      query(collection(db, 'budgets', budgetId, 'profiles')),
+      (snapshot) => {
+        const newProfiles = snapshot.docs.map(doc => ({
+          id: doc.id,
+          ...doc.data()
+        }))
+        console.log('Profiles loaded:', newProfiles.length)
+        setProfiles(newProfiles)
+      },
+      (error) => console.error('Error loading profiles:', error)
+    )
+
+    // Подписываемся на категории
+    const unsubCategories = onSnapshot(
+      query(collection(db, 'budgets', budgetId, 'categories')),
+      (snapshot) => {
+        const newCategories = snapshot.docs.map(doc => ({
+          id: doc.id,
+          ...doc.data()
+        }))
+        console.log('Categories loaded:', newCategories.length)
+        setCategories(newCategories)
+      },
+      (error) => console.error('Error loading categories:', error)
+    )
+
+    return () => {
+      unsubProfiles()
+      unsubCategories()
+    }
+  }, [user, budgetId])
+
+  // Проверка доступа
   useEffect(() => {
     if (!user || !budgetId) return
 

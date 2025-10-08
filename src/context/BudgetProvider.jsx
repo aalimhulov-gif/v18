@@ -344,13 +344,18 @@ export function BudgetProvider({ children }) {
   }
 
   async function createBudget() {
+    if (!user) throw new Error('Необходима авторизация')
+    
     const code = genCode(6)
     const budgetRef = doc(collection(db, 'budgets'))
     await setDoc(budgetRef, {
-      owner: user?.uid || null,
+      owner: user.uid,
       createdAt: serverTimestamp(),
       currency: 'PLN',
-      code
+      code,
+      members: {
+        [user.uid]: true
+      }
     })
     
     // Создаем профили

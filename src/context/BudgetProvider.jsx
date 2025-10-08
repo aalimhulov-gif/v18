@@ -344,49 +344,73 @@ export function BudgetProvider({ children }) {
   }
 
   async function createBudget() {
-    if (!user) throw new Error('Необходима авторизация')
-    
-    const code = genCode(6)
-    const budgetRef = doc(collection(db, 'budgets'))
-    await setDoc(budgetRef, {
-      owner: user.uid,
-      createdAt: serverTimestamp(),
-      currency: 'PLN',
-      code,
-      members: {
-        [user.uid]: true
-      }
-    })
-    
-    // Создаем профили
-    await addDoc(collection(budgetRef, 'profiles'), { name: 'Артур', createdAt: serverTimestamp(), online: false, lastSeen: null })
-    await addDoc(collection(budgetRef, 'profiles'), { name: 'Валерия', createdAt: serverTimestamp(), online: false, lastSeen: null })
-    
-    // Создаем базовые категории
-    const defaultCategories = [
-      { name: 'Зарплата', emoji: '💰', type: 'income', limit: 0 },
-      { name: 'Фриланс', emoji: '💻', type: 'income', limit: 0 },
-      { name: 'Подарки', emoji: '🎁', type: 'income', limit: 0 },
-      { name: 'Еда', emoji: '🍕', type: 'expense', limit: 0 },
-      { name: 'Транспорт', emoji: '🚗', type: 'expense', limit: 0 },
-      { name: 'Развлечения', emoji: '🎮', type: 'expense', limit: 0 },
-      { name: 'Покупки', emoji: '🛒', type: 'expense', limit: 0 },
-      { name: 'Здоровье', emoji: '🏥', type: 'expense', limit: 0 },
-      { name: 'Прочее', emoji: '📝', type: 'both', limit: 0 }
-    ]
-    
-    for (const category of defaultCategories) {
-      await addDoc(collection(budgetRef, 'categories'), {
-        ...category,
-        createdAt: serverTimestamp()
+    try {
+      if (!user) throw new Error('Необходима авторизация')
+      
+      const code = genCode(6)
+      const budgetRef = doc(collection(db, 'budgets'))
+      
+      console.log('Creating budget...', { userId: user.uid, budgetId: budgetRef.id })
+      
+      // Создаем бюджет
+      await setDoc(budgetRef, {
+        owner: user.uid,
+        createdAt: serverTimestamp(),
+        currency: 'PLN',
+        code,
+        members: {
+          [user.uid]: true
+        }
       })
+
+      console.log('Budget created, creating profile...')
+      
+      // Создаем профиль для текущего пользователя
+      await addDoc(collection(budgetRef, 'profiles'), { 
+        name: user.email.split('@')[0], 
+        userId: user.uid,
+        createdAt: serverTimestamp(), 
+        online: true, 
+        lastSeen: serverTimestamp(),
+        lastLogin: serverTimestamp()
+      })
+
+      console.log('Profile created, creating categories...')
+      
+      // Создаем базовые категории
+      const defaultCategories = [
+        { name: 'Зарплата', emoji: '💰', type: 'income', limit: 0 },
+        { name: 'Фриланс', emoji: '💻', type: 'income', limit: 0 },
+        { name: 'Подарки', emoji: '🎁', type: 'income', limit: 0 },
+        { name: 'Еда', emoji: '🍕', type: 'expense', limit: 0 },
+        { name: 'Транспорт', emoji: '🚗', type: 'expense', limit: 0 },
+        { name: 'Развлечения', emoji: '🎮', type: 'expense', limit: 0 },
+        { name: 'Покупки', emoji: '🛒', type: 'expense', limit: 0 },
+        { name: 'Здоровье', emoji: '🏥', type: 'expense', limit: 0 },
+        { name: 'Прочее', emoji: '📝', type: 'both', limit: 0 }
+      ]
+      
+      for (const category of defaultCategories) {
+        await addDoc(collection(budgetRef, 'categories'), {
+          ...category,
+          createdAt: serverTimestamp()
+        })
+      }
+
+      console.log('Categories created, saving budget ID...')
+      
+      // Сохраняем ID бюджета
+      setBudgetId(budgetRef.id)
+      setBudgetCode(code)
+      localStorage.setItem('budgetId', budgetRef.id)
+      localStorage.setItem('budgetCode', code)
+
+      console.log('Budget creation completed successfully')
+      return budgetRef.id
+    } catch (error) {
+      console.error('Error creating budget:', error)
+      throw error
     }
-    
-    setBudgetId(budgetRef.id)
-    setBudgetCode(code)
-    localStorage.setItem('budgetId', budgetRef.id)
-    localStorage.setItem('budgetCode', code)
-    return budgetRef.id
   }
 
   async function joinBudget(idOrCode) {
